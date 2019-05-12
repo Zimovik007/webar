@@ -33,7 +33,7 @@ impl Frame {
 
   pub fn surf(&self) {
     let integral_image = integral_image::<_, u8>(&self.image_buffer);
-    let h_pyramid: hessian::Hessian_pyramid = hessian::new(4, 6, 2);
+    let mut h_pyramid: hessian::HessianPyramid = hessian::new(4, 6, 2);
     h_pyramid.build_pyramid(integral_image);
   }
 
