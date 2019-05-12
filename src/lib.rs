@@ -24,5 +24,7 @@ pub fn transform_to_black_and_white(inp: Vec<u8>, width: u32, height: u32) -> Ve
 pub fn get_surf_features(inp: Vec<u8>, width: u32, height: u32) -> Vec<u8> {
   let frame: frame::Frame = frame::create(inp, width, height);
   frame.surf();
+  // log(&format!("{:?}", frame)[..]);
+  println!("{:?}", frame);
   return frame.get_result();
 }

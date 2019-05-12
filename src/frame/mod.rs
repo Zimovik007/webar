@@ -1,14 +1,18 @@
 extern crate imageproc;
 extern crate image;
 
+mod hessian;
+
 use imageproc::integral_image::{integral_image, sum_image_pixels};
 
+#[derive(Debug)]
 pub struct Frame {
   frame: Vec<u8>,
   image_buffer: image::ImageBuffer<image::Rgba<u8>, Vec<u8>>,
   surf_features: Vec<Point>,
 }
 
+#[derive(Debug)]
 pub struct Point {
   x: u32,
   y: u32,
@@ -28,7 +32,9 @@ impl Frame {
   }
 
   pub fn surf(&self) {
-    let integral_image = integral_image::<_, u32>(&self.image_buffer);
+    let integral_image = integral_image::<_, u8>(&self.image_buffer);
+    let h_pyramid: hessian::Hessian_pyramid = hessian::new(4, 6, 2);
+    h_pyramid.build_pyramid(integral_image);
   }
 
   pub fn get_result(self) -> Vec<u8> {
