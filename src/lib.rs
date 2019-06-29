@@ -21,6 +21,11 @@ pub fn transform_to_black_and_white(inp: Vec<u8>, width: u32, height: u32) -> Ve
 }
 
 #[wasm_bindgen]
+pub fn transform_to_gray(inp: Vec<u8>, width: u32, height: u32) -> Vec<u8> {
+  return frame::create(inp, width, height).transform_to_gray().get_result();
+}
+
+#[wasm_bindgen]
 pub fn get_surf_features(inp: Vec<u8>, width: u32, height: u32) -> Vec<u8> {
   let frame: frame::Frame = frame::create(inp, width, height);
   frame.surf();

@@ -30,10 +30,11 @@ computeFrame = () => {
   ctx1.drawImage(video, 0, 0, width, height);
   var frame = ctx1.getImageData(0, 0, width, height);            
 
-  frame.data.set(wasm_module.get_surf_features(frame.data, width, height));
+  frame.data.set(wasm_module.transform_to_gray(frame.data));
 
   ctx1.putImageData(frame, 0, 0);
   return;
 };
+
 doLoad();
 setTimeout(playVideo, 2000);

@@ -5,6 +5,8 @@ mod hessian;
 
 use imageproc::integral_image::{integral_image, sum_image_pixels};
 
+pub const RGB2_YUM: &'static [f32; 3] = &[0.299, 0.587, 0.114];
+
 #[derive(Debug)]
 pub struct Frame {
   frame: Vec<u8>,
@@ -19,10 +21,23 @@ pub struct Point {
 }
 
 impl Frame {
+
   pub fn transform_to_black_and_white(mut self) -> Frame {
     let l: usize = self.frame.len() / 4;
     for i in 0..l {
       let gray: u32 = (self.frame[i * 4 + 0] as u32 + self.frame[i * 4 + 1] as u32 + self.frame[i * 4 + 2] as u32) / 3;
+      self.frame[i * 4 + 0] = gray as u8;
+      self.frame[i * 4 + 1] = gray as u8;
+      self.frame[i * 4 + 2] = gray as u8;
+    }
+
+    self
+  }
+
+  pub fn transform_to_gray(mut self) -> Frame {
+    let l: usize = self.frame.len() / 4;
+    for i in 0..l {
+      let gray: f32 = self.frame[i * 4 + 0] as f32 * RGB2_YUM[0] + self.frame[i * 4 + 1] as f32 * RGB2_YUM[1] + self.frame[i * 4 + 2] as f32 * RGB2_YUM[2];
       self.frame[i * 4 + 0] = gray as u8;
       self.frame[i * 4 + 1] = gray as u8;
       self.frame[i * 4 + 2] = gray as u8;
