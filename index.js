@@ -1,12 +1,11 @@
 const js = import("./pkg/surf.js");
-var wasm_module;
-js.then(js => wasm_module = js);
+let wasm_module;
 
-var video = document.getElementById('videoElement');
-var c1 = document.getElementById("canvasElement");
-var ctx1 = c1.getContext("2d");
-var height = 375;
-var width = 500;
+let video = document.getElementById('videoElement');
+let canvas = document.getElementById("canvasElement");
+let context = canvas.getContext("2d");
+let height = 375;
+let width = 500;
 
 playVideo = () => {
   if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -17,24 +16,19 @@ playVideo = () => {
   };
 }
 
-timerCallback = () => {
-  if (video.paused || video.ended)
-    return;  
-  computeFrame();
-  setTimeout(timerCallback, 16);
-};
-
-doLoad = () => video.addEventListener("play", timerCallback, false);
-
 computeFrame = () => {
-  ctx1.drawImage(video, 0, 0, width, height);
-  var frame = ctx1.getImageData(0, 0, width, height);            
+  context.drawImage(video, 0, 0, width, height);
+  let frame = context.getImageData(0, 0, width, height);
 
-  frame.data.set(wasm_module.transform_to_gray(frame.data));
-
-  ctx1.putImageData(frame, 0, 0);
-  return;
+  frame.data.set(wasm_module.transform_to_black_and_white(frame.data));
+  
+  context.putImageData(frame, 0, 0);
 };
 
-doLoad();
-setTimeout(playVideo, 2000);
+video.addEventListener("play", () => setInterval(computeFrame, 16), false);
+
+
+js.then(js => {
+  wasm_module = js;
+  playVideo();
+});
