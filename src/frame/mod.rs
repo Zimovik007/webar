@@ -45,7 +45,6 @@ impl Frame {
     let shift: u32 = (_size / 2) as u32;
     
     let mut gauss_frame: Vec<u8> = self.frame.to_vec();
-
     let mut index: u32;
 
     for i in shift..(self.height - shift) {
@@ -71,6 +70,53 @@ impl Frame {
     self
   }
 
+  pub fn sobel_operator(mut self) -> Frame {
+    let m_g_x: Vec<Vec<i32>> = vec![vec![1, 0, -1], vec![2, 0, -2], vec![1, 0, -1]];
+    let m_g_y: Vec<Vec<i32>> = vec![vec![1, 2, 1], vec![0, 0, 0], vec![-1, -2, -1]];
+
+    let mut sobel_matrix: Vec<u8> = self.frame.to_vec();
+    let mut index: u32;
+
+    for i in 1..self.height - 2 {
+      for j in 1..self.width - 2 {
+
+        let mut g_x: i32 = 0;
+        let mut g_y: i32 = 0;
+
+        for k in i - 1..i + 1 {
+          for l in j - 1..j + 1 {
+            index = k * self.width + l;
+            g_x += m_g_x[(k - (i - 1)) as usize][(l - (j - 1)) as usize] * self.frame[(index * 4) as usize] as i32;
+            g_y += m_g_y[(k - (i - 1)) as usize][(l - (j - 1)) as usize] * self.frame[(index * 4) as usize] as i32;
+          } 
+        }
+
+        let g: u8 = ((g_x.pow(2) + g_y.pow(2)) as f64).sqrt() as u8;
+        if g == 0 {
+          return self;
+        }
+
+        let theta: u8 = ((4.0_f64 * (g_x as f64).atan2(g_y as f64) / std::f64::consts::PI).round() * std::f64::consts::PI / 4.0_f64 - std::f64::consts::PI / 2.0_f64) as u8;
+
+        index = i * self.width + j;
+
+        sobel_matrix[(index * 4) as usize] = g;
+        sobel_matrix[((index * 4) + 1) as usize] = g;
+        sobel_matrix[((index * 4) + 2) as usize] = g;
+
+        index += self.width + 1;
+
+        sobel_matrix[(index * 4) as usize] = theta;
+        sobel_matrix[((index * 4) + 1) as usize] = theta;
+        sobel_matrix[((index * 4) + 2) as usize] = theta;
+
+      }
+    }
+
+    self.frame = sobel_matrix;
+    self
+  }
+
   pub fn canny(mut self) -> Frame {
     
     let _size: u32 = 7;
@@ -78,6 +124,7 @@ impl Frame {
 
     self = Frame::transform_to_gray(self);
     self = Frame::gauss_filter(self, _size, _omega);
+    self = Frame::sobel_operator(self);
     self
   }
 
