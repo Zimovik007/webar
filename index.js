@@ -20,12 +20,12 @@ computeFrame = () => {
   context.drawImage(video, 0, 0, width, height);
   let frame = context.getImageData(0, 0, width, height);
 
-  frame.data.set(wasm_module.transform_to_black_and_white(frame.data));
+  frame.data.set(wasm_module.canny(frame.data, width, height));
   
   context.putImageData(frame, 0, 0);
 };
 
-video.addEventListener("play", () => setInterval(computeFrame, 16), false);
+video.addEventListener("play", () => setInterval(computeFrame, 32), false);
 
 
 js.then(js => {
