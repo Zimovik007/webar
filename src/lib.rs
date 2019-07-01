@@ -47,10 +47,10 @@ pub fn canny(inp: Vec<u8>, width: u32, height: u32) -> Vec<u8> {
 #[wasm_bindgen]
 pub fn test_webgl() -> Result<(), JsValue>{
   panic::set_hook(Box::new(console_error_panic_hook::hook));
+
   let document = web_sys::window().unwrap().document().unwrap();
   let canvas = document.get_element_by_id("canvasElement").unwrap();
-  let canvas: web_sys::HtmlCanvasElement = canvas.dyn_into::<web_sys::HtmlCanvasElement>().map_err(|_| ()).unwrap();
-  
+  let canvas: web_sys::HtmlCanvasElement = canvas.dyn_into::<web_sys::HtmlCanvasElement>().map_err(|_| ()).unwrap();  
   let context = canvas.get_context("webgl").unwrap().unwrap().dyn_into::<web_sys::WebGlRenderingContext>().unwrap();
 
   let vert_shader = compile_shader(&context, WebGlRenderingContext::VERTEX_SHADER,
@@ -69,6 +69,7 @@ pub fn test_webgl() -> Result<(), JsValue>{
       }
     "#,
   )?;
+
   let program = link_program(&context, &vert_shader, &frag_shader)?;
   context.use_program(Some(&program));
 
@@ -79,12 +80,7 @@ pub fn test_webgl() -> Result<(), JsValue>{
 
   unsafe {
     let vert_array = js_sys::Float32Array::view(&vertices);
-
-    context.buffer_data_with_array_buffer_view(
-      WebGlRenderingContext::ARRAY_BUFFER,
-      &vert_array,
-      WebGlRenderingContext::STATIC_DRAW,
-    );
+    context.buffer_data_with_array_buffer_view(WebGlRenderingContext::ARRAY_BUFFER, &vert_array, WebGlRenderingContext::STATIC_DRAW);
   }
 
   context.vertex_attrib_pointer_with_i32(0, 3, WebGlRenderingContext::FLOAT, false, 0, 0);
@@ -93,12 +89,7 @@ pub fn test_webgl() -> Result<(), JsValue>{
   context.clear_color(0.0, 0.0, 0.0, 1.0);
   context.clear(WebGlRenderingContext::COLOR_BUFFER_BIT);
 
-  context.draw_arrays(
-    WebGlRenderingContext::TRIANGLES,
-    0,
-    (vertices.len() / 3) as i32,
-  );
-
+  context.draw_arrays(WebGlRenderingContext::TRIANGLES, 0, (vertices.len() / 3) as i32);
   Ok(())
 }
 

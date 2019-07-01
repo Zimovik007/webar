@@ -6,6 +6,7 @@ mod hessian;
 use imageproc::integral_image::{integral_image, sum_image_pixels};
 
 pub const RGB2_YUM: &'static [f32; 3] = &[0.299, 0.587, 0.114];
+// pub const GAUSS_KERNEL_OMEGA_1: &'static [f32; 3] = &[0.299, 0.587, 0.114];
 
 #[derive(Debug)]
 pub struct Frame {
@@ -24,13 +25,13 @@ pub struct Point {
 
 impl Frame {
 
-  fn gauss_func(x: i32, y: i32, _omega: f64) -> f64 {
-    let e: f64 = 1.0_f64.exp();
-    1.0_f64 / (2.0_f64 * std::f64::consts::PI * _omega) * e.powf((0 - x.pow(2) - y.pow(2)) as f64 / (2.0_f64 * _omega.powf(2.0)))
+  fn gauss_func(x: i32, y: i32, _omega: f32) -> f32 {
+    let e: f32 = 1.0_f32.exp();
+    1.0_f32 / (2.0_f32 * std::f32::consts::PI * _omega) * e.powf((0 - x.pow(2) - y.pow(2)) as f32 / (2.0_f32 * _omega.powf(2.0)))
   }
 
-  fn get_gauss_kernel(_size: u32, _omega: f64) -> Vec<Vec<f64>> {
-    let mut m: Vec<Vec<f64>> = vec![vec![0_f64; _size as usize]; _size as usize];
+  fn get_gauss_kernel(_size: u32, _omega: f32) -> Vec<Vec<f32>> {
+    let mut m: Vec<Vec<f32>> = vec![vec![0_f32; _size as usize]; _size as usize];
     let shift: i32 = (_size / 2) as i32;
     for i in 0.._size {
       for j in 0.._size {
@@ -40,8 +41,8 @@ impl Frame {
     m
   }
 
-  pub fn gauss_filter(mut self, _size: u32, _omega: f64) -> Frame {
-    let gauss_kernel: Vec<Vec<f64>> = Frame::get_gauss_kernel(_size, _omega);
+  pub fn gauss_filter(mut self, _size: u32, _omega: f32) -> Frame {
+    let gauss_kernel: Vec<Vec<f32>> = Frame::get_gauss_kernel(_size, _omega);
     let shift: u32 = (_size / 2) as u32;
     
     let mut gauss_frame: Vec<u8> = self.frame.to_vec();
@@ -50,11 +51,11 @@ impl Frame {
     for i in shift..(self.height - shift) {
       for j in shift..(self.width - shift) {
 
-        let mut val: f64 = 0_f64;
+        let mut val: f32 = 0_f32;
         for k in (i - shift)..(i + shift) {
           for l in (j - shift)..(j + shift) {
             index = k * self.width + l;
-            val += self.frame[(index * 4) as usize] as f64 * gauss_kernel[(k - (i - shift)) as usize][(l - (j - shift)) as usize];
+            val += self.frame[(index * 4) as usize] as f32 * gauss_kernel[(k - (i - shift)) as usize][(l - (j - shift)) as usize];
           }
         }
 
@@ -91,12 +92,12 @@ impl Frame {
           } 
         }
 
-        let g: u8 = ((g_x.pow(2) + g_y.pow(2)) as f64).sqrt() as u8;
+        let g: u8 = ((g_x.pow(2) + g_y.pow(2)) as f32).sqrt() as u8;
         if g == 0 {
           continue;
         }
 
-        let theta: u8 = ((4.0_f64 * (g_x as f64).atan2(g_y as f64) / std::f64::consts::PI).round() * std::f64::consts::PI / 4.0_f64 - std::f64::consts::PI / 2.0_f64) as u8;
+        let theta: u8 = ((4.0_f32 * (g_x as f32).atan2(g_y as f32) / std::f32::consts::PI).round() * std::f32::consts::PI / 4.0_f32 - std::f32::consts::PI / 2.0_f32) as u8;
 
         index = i * self.width + j;
 
@@ -120,7 +121,7 @@ impl Frame {
   pub fn canny(mut self) -> Frame {
     
     let _size: u32 = 10;
-    let _omega: f64 = 1.0_f64;
+    let _omega: f32 = 1.0_f32;
 
     self = Frame::transform_to_gray(self);
     self = Frame::gauss_filter(self, _size, _omega);
