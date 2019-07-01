@@ -1,9 +1,17 @@
-const path = require('path');
+const path = require("path");
+
 module.exports = {
   entry: "./index.js",
   output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "index.js",
+    filename: "./bundle.js",
+    path: path.resolve()
   },
-  mode: "development"
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/
+      },
+    ]
+  }
 };

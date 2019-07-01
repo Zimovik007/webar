@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "webpack-dev-server"
+    "serve": "webpack-dev-server",
+    "build": "webpack --config webpack.config.js --mode=production"
   },
   "devDependencies": {
     "webpack": "^4.30.0",

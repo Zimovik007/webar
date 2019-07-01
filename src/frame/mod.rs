@@ -93,7 +93,7 @@ impl Frame {
 
         let g: u8 = ((g_x.pow(2) + g_y.pow(2)) as f64).sqrt() as u8;
         if g == 0 {
-          return self;
+          continue;
         }
 
         let theta: u8 = ((4.0_f64 * (g_x as f64).atan2(g_y as f64) / std::f64::consts::PI).round() * std::f64::consts::PI / 4.0_f64 - std::f64::consts::PI / 2.0_f64) as u8;

@@ -24,10 +24,12 @@ computeFrame = () => {
 
   let start = new Date().getTime();
   frame.data.set(wasm_module.canny(frame.data, width, height));
+
   performance.push(new Date().getTime() - start);
   if (performance.length % 300 == 0){
     console.log(performance.reduce((a, b) => a + b, 0) / performance.length);
   }
+  
   context.putImageData(frame, 0, 0);
 };
 
