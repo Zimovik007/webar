@@ -119,7 +119,7 @@ impl Frame {
 
   pub fn canny(mut self) -> Frame {
     
-    let _size: u32 = 7;
+    let _size: u32 = 10;
     let _omega: f64 = 1.0_f64;
 
     self = Frame::transform_to_gray(self);
